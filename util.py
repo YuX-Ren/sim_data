@@ -58,8 +58,8 @@ def grid_distance_to_center(grid):
 
 
 def generate_hollow_sphere(diameter, density=1.0):
-    radius = diameter // 2
-    size = diameter + 2  # Add extra space for boundary effects
+    radius = diameter // 4
+    size = diameter   # Add extra space for boundary effects
     center = size // 2
 
     # Create a 3D grid
@@ -90,13 +90,12 @@ def sphere(res):
     z = np.cos(phi)
     return x, y, z
 
-def generate_prism(dim_siz):
-    dim_size = 64
+def generate_prism(dim_size):
     X, Y, Z = np.meshgrid(np.linspace(-(dim_size-1)/2, (dim_size-1)/2, dim_size), np.linspace(-(dim_size-1)/2, (dim_size-1)/2, dim_size), np.linspace(-(dim_size-1)/2, (dim_size-1)/2, dim_size))
     QP = np.vstack([X.ravel(), Y.ravel(), Z.ravel()]).T
 
-    P0 = np.random.rand() * 10 + 20
-    P1 = np.random.rand() * 2.5 + 2.5
+    P0 = np.random.rand() * dim_size/6 + dim_size/3
+    P1 = np.random.rand() * dim_size/10 + dim_size/20
     tipX, tipY, tipZ = sphere(100)
     tipX = tipX.ravel() * P1
     tipY = tipY.ravel() * P1
@@ -125,9 +124,9 @@ def gauss_function(size, sigma):
     return g
 
 
-def generate_toy_model(dim_siz=64, model_id=0):
+def generate_toy_model(dim_size=64, model_id=0):
     """translated from SphericalHarmonicsUtil.generate_toy_vol()"""
-    siz = np.array([dim_siz, dim_siz, dim_siz])
+    siz = np.array([dim_size, dim_size, dim_size])
 
     mid = siz / 2.0
 
@@ -139,11 +138,11 @@ def generate_toy_model(dim_siz=64, model_id=0):
         mid_dia = 0.8
         long_dia = 1.2
 
-        e0 = generate_toy_model__gaussian(dim_siz=dim_siz, xg=xg, xm=(mid + np.array([siz[0] / 4.0, 0.0, 0.0])),
+        e0 = generate_toy_model__gaussian(dim_siz=dim_size, xg=xg, xm=(mid + np.array([siz[0] / 4.0, 0.0, 0.0])),
                                           dias=[long_dia, short_dia, short_dia])
-        e1 = generate_toy_model__gaussian(dim_siz=dim_siz, xg=xg, xm=(mid + np.array([0.0, siz[1] / 4.0, 0.0])),
+        e1 = generate_toy_model__gaussian(dim_siz=dim_size, xg=xg, xm=(mid + np.array([0.0, siz[1] / 4.0, 0.0])),
                                           dias=[short_dia, long_dia, short_dia])
-        e2 = generate_toy_model__gaussian(dim_siz=dim_siz, xg=xg, xm=(mid + np.array([0.0, 0.0, siz[2] / 4.0])),
+        e2 = generate_toy_model__gaussian(dim_siz=dim_size, xg=xg, xm=(mid + np.array([0.0, 0.0, siz[2] / 4.0])),
                                           dias=[short_dia, short_dia, long_dia])
 
         e3 = geometry.rotate_pad_zero(np.array(e0, order='F'), angle=np.array([np.pi / 4.0, 0.0, 0.0]),

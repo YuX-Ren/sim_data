@@ -17,7 +17,7 @@ import geometry
 import argparse
 import scipy.stats as SS
 from util import generate_hollow_sphere, generate_prism, generate_toy_model,cub_img
-
+from io_util import read_mrc_data
 class SimulatedSubtomogramGenerator():
   def __init__(self,output_dir,op,loc_proportion):
     self.output_dir = output_dir
@@ -26,7 +26,9 @@ class SimulatedSubtomogramGenerator():
   
   # generate a density map v that contains a toy structure
   def Generate_density_map(self):
-    v = generate_hollow_sphere(diameter=64)  # generate a pseudo density map
+    v = generate_hollow_sphere(diameter=140)  # generate a pseudo density map
+    # v = read_mrc_data('protein.mrc')[120:310, 110:250, 110:250]
+    # v = generate_prism(dim_size=140)
     print(f"\nsize of v = {v.shape}\n")
     return v
 
@@ -62,14 +64,14 @@ class SimulatedSubtomogramGenerator():
 def main():
     parser = argparse.ArgumentParser(description="Generate simulated subtomograms")
     parser.add_argument("output_dir", type=str, help="Output directory for saving generated data")
-    parser.add_argument("--missing_wedge_angle", type=float, default=30, help="Missing wedge angle")
-    parser.add_argument("--snr", type=float, default=0.5, help="Signal-to-Noise Ratio (SNR)")
+    parser.add_argument("--missing_wedge_angle", type=float, default=60, help="Missing wedge angle")
+    parser.add_argument("--snr", type=float, default=10.0, help="Signal-to-Noise Ratio (SNR)")
     parser.add_argument("--pix_size", type=float, default=1.0, help="Pixel size")
     parser.add_argument("--Dz", type=float, default=-5.0, help="Defocus value")
     parser.add_argument("--voltage", type=int, default=300, help="Accelerating voltage")
     parser.add_argument("--Cs", type=float, default=2.0, help="Spherical aberration coefficient")
     parser.add_argument("--sigma", type=float, default=0.4, help="Standard deviation")
-    parser.add_argument("--loc_proportion", type=float, default=0.1, help="Maximum Translation")
+    parser.add_argument("--loc_proportion", type=float, default=0.000001, help="Maximum Translation")
     args = parser.parse_args()
 
     op = {
@@ -79,9 +81,10 @@ def main():
 
     generator = SimulatedSubtomogramGenerator(args.output_dir, op, args.loc_proportion)
     v = generator.Generate_density_map()
-    vr = generator.rotate_translate_map(v)
-    vb = generator.generate_subtomogram(vr)
-    generator.save_result(v, vb,vr)
+    print(f"\nsize of v = {v.shape}\n")
+    # vr = generator.rotate_translate_map(v)
+    vb = generator.generate_subtomogram(v)
+    generator.save_result(v, vb,v)
 
 if __name__ == "__main__":
   main()

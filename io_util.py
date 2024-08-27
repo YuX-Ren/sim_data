@@ -48,7 +48,7 @@ def read_mrc_data(path, show_progress=False):
     a = mrc.data
     assert a.shape[0] > 0
     a = a.astype(np.float32)
-    a = a.transpose([2, 1, 0])
+    # a = a.transpose([2, 1, 0])
 
     return a
 
